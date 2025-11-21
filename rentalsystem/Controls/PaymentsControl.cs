@@ -1,0 +1,8 @@
+using System;
+using System.Data;
+using System.Windows.Forms;
+
+namespace rentalsystem.Controls
+{
+    public partial class PaymentsControl : UserControl
+    {        public PaymentsControl()        {            InitializeComponent();            LoadPayments();        }        public void LoadPayments()        {            var dt = DataAccess.GetAllPayments();            dgvPayments.DataSource = dt;            if (dgvPayments.Columns.Contains("payment_id")) dgvPayments.Columns["payment_id"].HeaderText = "Payment ID";            if (dgvPayments.Columns.Contains("tenant_username")) dgvPayments.Columns["tenant_username"].HeaderText = "Tenant";            if (dgvPayments.Columns.Contains("status")) dgvPayments.Columns["status"].HeaderText = "Status";        }        private void btnRefresh_Click(object sender, EventArgs e)        {            LoadPayments();        }        private void btnConfirm_Click(object sender, EventArgs e)        {            if (dgvPayments.CurrentRow == null) { MessageBox.Show("Select a payment to confirm."); return; }            var pidObj = dgvPayments.CurrentRow.Cells["payment_id"].Value;            if (pidObj == null) { MessageBox.Show("Payment id not found."); return; }            var paymentId = Convert.ToInt32(pidObj);            var ok = DataAccess.ConfirmPayment(paymentId);            MessageBox.Show(ok ? "Payment confirmed." : "Failed to confirm payment.");            if (ok) LoadPayments();        }    }}

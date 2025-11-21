@@ -1,0 +1,7 @@
+using System;
+using System.Windows.Forms;
+
+namespace rentalsystem
+{
+    public partial class AddUserForm : Form
+    {        public AddUserForm()        {            InitializeComponent();        }        private void btnSave_Click(object sender, EventArgs e)        {            var role = cmbRole.SelectedItem?.ToString();            var username = txtUsername.Text.Trim();            var pwd = txtPassword.Text;            var full = txtFullName.Text.Trim();            var email = txtEmail.Text.Trim();            var contact = txtContact.Text.Trim();            if (string.IsNullOrEmpty(role) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(pwd))            {                MessageBox.Show("Role, username and password are required.");                return;            }            var id = DataAccess.CreateUser(role, username, pwd, full, email, contact);            if (id > 0)            {                MessageBox.Show("User created.");                this.DialogResult = DialogResult.OK;                this.Close();            }            else            {                MessageBox.Show("Failed to create user. Check uniqueness of username/email.");            }        }    }}

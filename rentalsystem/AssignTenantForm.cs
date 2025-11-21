@@ -1,0 +1,8 @@
+using System;
+using System.Data;
+using System.Windows.Forms;
+
+namespace rentalsystem
+{
+    public partial class AssignTenantForm : Form
+    {        private int _propertyId;        private string _propertyName;        public AssignTenantForm(int propertyId, string propertyName)        {            _propertyId = propertyId;            _propertyName = propertyName;            InitializeComponent();            LoadTenants();            lblProperty.Text = $"Assign tenant to: {_propertyName} (ID: {_propertyId})";        }        private void LoadTenants()        {            var dt = DataAccess.GetTenants();            dgvTenants.DataSource = dt;        }        private void btnAssign_Click(object sender, EventArgs e)        {            if (dgvTenants.CurrentRow == null) { MessageBox.Show("Select a tenant."); return; }            var tenantId = Convert.ToInt32(dgvTenants.CurrentRow.Cells["user_id"].Value);            if (!decimal.TryParse(txtRent.Text.Trim(), out var rent)) { MessageBox.Show("Enter valid rent."); return; }            var start = dtpStart.Value.Date;            DateTime? end = null;            if (chkHasEnd.Checked) end = dtpEnd.Value.Date;            var leaseId = DataAccess.CreateLease(tenantId, _propertyId, rent, start, end);            if (leaseId > 0)            {                MessageBox.Show("Lease created.");                this.DialogResult = DialogResult.OK;                this.Close();            }            else            {                MessageBox.Show("Failed to create lease.");            }        }        private void btnRefresh_Click(object sender, EventArgs e)        {            LoadTenants();        }    }}
